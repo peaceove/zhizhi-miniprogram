@@ -1,0 +1,141 @@
+<!-- index.wxml -->
+<scroll-view class="scrollarea" scroll-y="true">
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="logo-container">
+      <image class="logo" src="/images/logo.png"></image>
+      <text class="app-name">植智</text>
+    </view>
+    <view class="search-box">
+      <image class="search-icon" src="/images/search.png"></image>
+      <input class="search-input" placeholder="搜索种植方案" bindinput="onSearchInput" />
+    </view>
+  </view>
+
+  <!-- 智能生成区域 -->
+  <view class="intelligent-area">
+    <view class="area-title">智能生成</view>
+    <view class="input-container">
+      <textarea class="user-input" placeholder="请描述您的种植需求..." bindinput="onUserInput"></textarea>
+      <button class="generate-btn" bindtap="generatePlan">生成方案</button>
+    </view>
+    <view class="plan-result" wx:if="{{showPlan}}">
+  <view class="result-header">
+    <text class="result-title">生成的种植方案</text>
+    <image class="result-icon" src="/images/plant.png"></image>
+  </view>
+  <view class="result-content">
+    <text>{{generatedPlan}}</text>
+  </view>
+</view>
+    <view class="quick-options">
+      <text class="option-tag" bindtap="selectQuickOption">盆栽养护</text>
+      <text class="option-tag" bindtap="selectQuickOption">花园设计</text>
+      <text class="option-tag" bindtap="selectQuickOption">季节种植</text>
+    </view>
+  </view>
+
+  <!-- 参数展示区域 -->
+  <view class="parameter-area">
+    <view class="area-title">环境参数监测</view>
+    <view class="parameters-grid">
+      <view class="param-card">
+        <text class="param-name">温度</text>
+        <text class="param-value">{{envParams.temperature}}°C</text>
+        <text class="param-status {{envParams.tempStatus}}">{{envParams.tempDesc}}</text>
+      </view>
+      <view class="param-card">
+        <text class="param-name">湿度</text>
+        <text class="param-value">{{envParams.humidity}}%</text>
+        <text class="param-status {{envParams.humidityStatus}}">{{envParams.humidityDesc}}</text>
+      </view>
+      <view class="param-card">
+        <text class="param-name">光照</text>
+        <text class="param-value">{{envParams.light}} lux</text>
+        <text class="param-status {{envParams.lightStatus}}">{{envParams.lightDesc}}</text>
+      </view>
+      <view class="param-card">
+        <text class="param-name">土壤湿度</text>
+        <text class="param-value">{{envParams.soilMoisture}}%</text>
+        <text class="param-status {{envParams.soilStatus}}">{{envParams.soilDesc}}</text>
+      </view>
+    </view>
+    <view class="chart-container">
+      <canvas class="trend-chart" canvas-id="trendChart"></canvas>
+    </view>
+  </view>
+
+  <!-- 分类引导区域 -->
+  <view class="category-area">
+    <view class="area-title">方案分类</view>
+    <view class="category-tabs">
+      <text class="tab-item {{activeTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0">场景方案</text>
+      <text class="tab-item {{activeTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="1">植物类型</text>
+      <text class="tab-item {{activeTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-index="2">养护知识</text>
+    </view>
+    
+    <!-- 场景方案内容 -->
+    <view wx:if="{{activeTab === 0}}" class="category-content">
+      <view class="scenario-card" bindtap="viewScenarioDetail">
+        <image class="scenario-img" src="/images/bonsai.png"></image>
+        <text class="scenario-name">阳台盆栽</text>
+        <text class="scenario-desc">适合小户型的精致绿植方案</text>
+      </view>
+      <view class="scenario-card" bindtap="viewScenarioDetail">
+        <image class="scenario-img" src="/images/balcony.png"></image>
+        <text class="scenario-name">露台花园</text>
+        <text class="scenario-desc">打造您的私人空中花园</text>
+      </view>
+    </view>
+    
+    <!-- 植物类型内容 -->
+    <view wx:if="{{activeTab === 1}}" class="category-content">
+      <view class="plant-type" bindtap="viewPlantList">
+        <image class="type-icon" src="/images/fruit.png"></image>
+        <text class="type-name">果蔬植物</text>
+      </view>
+      <view class="plant-type" bindtap="viewPlantList">
+        <image class="type-icon" src="/images/flower.png"></image>
+        <text class="type-name">花卉植物</text>
+      </view>
+      <view class="plant-type" bindtap="viewPlantList">
+        <image class="type-icon" src="/images/indoor.png"></image>
+        <text class="type-name">室内绿植</text>
+      </view>
+    </view>
+    
+    <!-- 养护知识内容 -->
+    <view wx:if="{{activeTab === 2}}" class="category-content">
+      <view class="knowledge-item" bindtap="viewKnowledgeDetail">
+        <text class="knowledge-title">四季植物养护要点</text>
+        <text class="knowledge-desc">春季修剪、夏季防晒、秋季施肥、冬季保暖...</text>
+        <text class="knowledge-date">2023-05-15</text>
+      </view>
+      <view class="knowledge-item" bindtap="viewKnowledgeDetail">
+        <text class="knowledge-title">常见病虫害防治</text>
+        <text class="knowledge-desc">白粉病、蚜虫、红蜘蛛等常见问题解决方案</text>
+        <text class="knowledge-date">2023-05-10</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部导航 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchBottomTab" data-index="0">
+      <image class="tab-icon" src="{{currentTab === 0 ? '/images/home_active.png' : '/images/home.png'}}"></image>
+      <text class="tab-text">首页</text>
+    </view>
+    <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchBottomTab" data-index="1">
+      <image class="tab-icon" src="{{currentTab === 1 ? '/images/plan_active.png' : '/images/plan.png'}}"></image>
+      <text class="tab-text">方案库</text>
+    </view>
+    <view class="tab-item {{currentTab === 2 ? 'active' : ''}}" bindtap="switchBottomTab" data-index="2">
+      <image class="tab-icon" src="{{currentTab === 2 ? '/images/monitor_active.png' : '/images/monitor.png'}}"></image>
+      <text class="tab-text">监测</text>
+    </view>
+    <view class="tab-item {{currentTab === 3 ? 'active' : ''}}" bindtap="switchBottomTab" data-index="3">
+      <image class="tab-icon" src="{{currentTab === 3 ? '/images/mine_active.png' : '/images/mine.png'}}"></image>
+      <text class="tab-text">我的</text>
+    </view>
+  </view>
+</scroll-view>

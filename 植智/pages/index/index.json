@@ -1,0 +1,10 @@
+{
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取用户位置推荐种植方案"
+    }
+  },
+  "networkTimeout": {
+    "request": 10000
+  }
+}
